@@ -4,6 +4,7 @@ name: Lint
 
 "on":
   create:
+  pull_request:
   push:
     branches: ['*']
   workflow_dispatch:
