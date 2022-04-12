@@ -1,0 +1,32 @@
+---
+
+name: Lint
+
+on:
+  create:
+  push:
+    branches: ['*']
+  workflow_dispatch:
+
+jobs:
+
+  shellcheck:
+    name: Shellcheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker://pipelinecomponents/shellcheck:latest
+        with:
+          # yamllint disable-line rule:line-length
+          args: /bin/sh -c "find . -name .git -type d -prune -o -type f ( -name '*.sh' -or -name 'run' ) -print0 | xargs -0 -r -n1 shellcheck"
+
+  yamllint:
+    name: Yamllint
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker://pipelinecomponents/yamllint:latest
+        with:
+          args: yamllint .
