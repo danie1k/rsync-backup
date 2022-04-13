@@ -17,6 +17,8 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: "true"
       - uses: docker://bats/bats:latest
         with:
           args: test/

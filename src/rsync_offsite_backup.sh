@@ -18,7 +18,6 @@ CONFIG_FILE=""
 DEFAULT_INFO="progress2"
 JOB_NAME="${_PREFIX}${PID}"
 RSYNC_OPTIONS=(
-  "$(which --skip-alias --skip-functions rsync)"
   #--8-bit-output           # leave high-bit chars unescaped in output
   #--acls                   # preserve ACLs (implies --perms)
   #--address=ADDRESS        # bind address for outgoing socket to daemon
@@ -146,20 +145,20 @@ RSYNC_OPTIONS=(
   #--xattrs                 # preserve extended attributes
 )
 
+function check_prerequisites() {
+  local required_commands=(dasel jq rsync screen)
 
-#
-# Prerequisites
-#
-for command_name in dasel jq rsync screen
-do
-  # shellcheck disable=SC2248,SC2250
-  if ! which $command_name 1>/dev/null 2>&1
-  then
-    echo -n "ERROR: ${command_name} is not available or not in your PATH. " >&2
-    echo  "Please install ${command_name} and try again." >&2
-    exit 1
-  fi
-done
+  for command_name in "${required_commands[@]}"; do
+    # shellcheck disable=SC2248
+    if ! which ${command_name} 1>/dev/null 2>&1; then
+      echo -n "ERROR: ${command_name} is not available or not in your PATH. " >&2
+      echo "Please install ${command_name} and try again." >&2
+      exit 1
+    fi
+  done
+}
+
+return 0  # FIXME: Remove
 
 
 #
@@ -364,5 +363,5 @@ fi
 # Execute rsync
 #
 echo -n 'Starting rsync... '
-screen -dmU -S "${JOB_NAME}" -t "${JOB_NAME}" "${RSYNC_OPTIONS[@]}"
+screen -dmU -S "${JOB_NAME}" -t "${JOB_NAME}" "$(which --skip-alias --skip-functions rsync)" "${RSYNC_OPTIONS[@]}"
 echo 'Done.'
