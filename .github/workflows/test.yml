@@ -1,0 +1,22 @@
+---
+
+name: Test
+
+"on":
+  create:
+  pull_request:
+  push:
+    branches: ['*']
+  workflow_dispatch:
+
+jobs:
+
+  unit-tests:
+    name: BATS
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: docker://bats/bats:latest
+        with:
+          args: test/
