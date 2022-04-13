@@ -6,7 +6,7 @@ setup() {
 }
 
 teardown() {
-  PATH="${PATH_BACKUP}"
+  PATH="${PATH_BACKUP:?}"
 }
 
 @test "check_prerequisites should not find dasel executable" {

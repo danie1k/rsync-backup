@@ -1,5 +1,6 @@
 [![Lint](https://github.com/danie1k/rsync-backup/actions/workflows/lint.yml/badge.svg)](https://github.com/danie1k/rsync-backup/actions/workflows/lint.yml)
 [![Test](https://github.com/danie1k/rsync-backup/actions/workflows/test.yml/badge.svg)](https://github.com/danie1k/rsync-backup/actions/workflows/test.yml)
+[![Code Coverage](https://codecov.io/gh/danie1k/rsync-backup/branch/master/graph/badge.svg?token=07IXMZ0DWO)](https://codecov.io/gh/danie1k/rsync-backup)
 [![MIT License](https://img.shields.io/github/license/danie1k/rsync-backup)](https://github.com/danie1k/rsync-backup/blob/master/LICENSE)
 
 # rsync-backup

@@ -1,4 +1,5 @@
 ---
+# https://github.com/particleflux/kcov-bats-circleci-codeclimate
 
 name: Test
 
@@ -19,6 +20,28 @@ jobs:
       - uses: actions/checkout@v2
         with:
           submodules: "true"
-      - uses: docker://bats/bats:latest
+
+      - name: Run tests
+        uses: docker://kcov/kcov:latest
         with:
-          args: test/
+          args: kcov --include-path src/ codecov/ ./test/bats/bin/bats test/
+
+      # https://github.com/particleflux/kcov-bats-circleci-codeclimate/blob/master/.circleci/config.yml
+      - name: Prepare coverage report
+        run: |2
+          _xml="$(ls -1 codecov/bats*/cobertura.xml | head -1)"
+          sed -r \
+            's#"bats"#"src"#;s#/github/workspace/##;s#<source>(.+)/</source>#<source>/github/workspace/</source>#' \
+            "$_xml" > coverage.xml
+      - name: Upload coverage report
+        uses: codecov/codecov-action@v2
+        # https://github.com/SimonKagstrom/kcov/blob/master/doc/codecov.md
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          fail_ci_if_error: false
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: code-coverage-report
+          path: coverage.xml
