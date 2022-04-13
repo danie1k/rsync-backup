@@ -19,3 +19,8 @@ max_line_length = 120
 [.version]
 max_line_length = off
 insert_final_newline = off
+
+[Makefile]
+indent_size = 1
+indent_style = tab
+tab_width = 4

@@ -5,38 +5,12 @@ shopt -s failglob
 readonly SELF="${0}"
 readonly PID=$$
 readonly _PREFIX='rsync:'
-readonly _VERSION='2022.01'
-
-
-# https://download.samba.org/pub/rsync/rsync.1#FILTER_RULES
-readonly ALWAYS_EXCLUDE=(
-  # Files
-  '**/*.img'
-  '**/*.iso'
-  '**/*.pyc'
-  '**/*.qemu*'
-  '**/.DS_Store'
-  # Directories
-  '**/.*cache/***'
-  '**/.Trash/***'
-  '**/.nox/***'
-  '**/.tox/***'
-  '**/.venv/***'
-  '**/__*__/***'
-  '**/cover/***'
-  '**/dist/***'
-  '**/htmlcov/***'
-  '**/lost+found/***'
-  '**/node_modules/***'
-  '**/venv/***'
-  '**/virtualenv/***'
-)
+readonly _VERSION='2022.02'
 
 
 #
 # Defaults
 #
-ATTACH_FLAG=0
 DRY_RUN_FLAG=0
 LIST_ONLY_FLAG=0
 
@@ -390,5 +364,5 @@ fi
 # Execute rsync
 #
 echo -n 'Starting rsync... '
-screen -dmU -S "${JOB_NAME}" -t "${JOB_NAME}" ${RSYNC_OPTIONS[@]}
+screen -dmU -S "${JOB_NAME}" -t "${JOB_NAME}" "${RSYNC_OPTIONS[@]}"
 echo 'Done.'

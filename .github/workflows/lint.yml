@@ -16,10 +16,12 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
-      - uses: docker://pipelinecomponents/shellcheck:latest
+      - uses: ludeeus/action-shellcheck@master
+        env:
+          SHELLCHECK_OPTS: --enable=all --shell=bash
         with:
-          # yamllint disable-line rule:line-length
-          args: /bin/sh -c "find . -name .git -type d -prune -o -type f ( -name '*.sh' -or -name 'run' ) -print0 | xargs -0 -r -n1 shellcheck"
+          format: gcc
+          severity: warning
 
   yamllint:
     name: Yamllint

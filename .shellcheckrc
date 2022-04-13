@@ -1,4 +1,4 @@
-color=auto
 enable=all
 severity=warning
 shell=bash
+disable=SC2155
