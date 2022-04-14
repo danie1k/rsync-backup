@@ -265,33 +265,26 @@ function get_active_jobs() {
   screen -list | grep 'Detached' | grep "${_PREFIX}" | awk '{print $1}'
 }
 
-return 0 # FIXME: Remove
+function list_active_jobs() {
+  local jobs_list="$(get_active_jobs)"
 
-# shellcheck disable=SC2248,SC2250
-if [ $LIST_ONLY_FLAG -eq 1 ]
-then
-  if [ -z "${ACTIVE_SCREEN_SESSIONS}" ]
-  then
-    echo 'No active rsync jobs'
+  if [[ -z "${jobs_list}" ]]; then
+    _out 'No active rsync jobs'
     exit 0
+  else
+    _header "CURRENTLY ACTIVE RSYNC SESSIONS" \
+      'To attach to the session run: rsync -r <job_name>'
+
+    local i=1
+    # shellcheck disable=SC2068
+    for job_name in ${jobs_list[@]}; do
+      printf '(%02d) %s\n' ${i} "${job_name}"
+      i=$((i + 1))
+    done
   fi
+}
 
-  _printf_line='                                            '
-  _reattach_cmd="rsync -r <job_name>"
-  echo "┌────────────────────────────────────────────────────────────────────────────┐"
-  echo "│                      CURRENTLY ACTIVE RSYNC SESSIONS                       │"
-  echo "├────────────────────────────────────────────────────────────────────────────┤"
-  printf "│ To attach to the session run: %s%s │\n" "${_reattach_cmd}" "${_printf_line:${#_reattach_cmd}}"
-  echo "└────────────────────────────────────────────────────────────────────────────┘"
-
-  # shellcheck disable=SC2068
-  for job_name in ${ACTIVE_SCREEN_SESSIONS[@]}
-  do
-    echo "${job_name}"
-  done
-  exit 0
-fi
-
+return 0 # FIXME: Remove
 
 #
 # Read config
