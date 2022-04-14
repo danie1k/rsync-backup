@@ -17,12 +17,14 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
-      - uses: ludeeus/action-shellcheck@master
-        env:
-          SHELLCHECK_OPTS: --enable=all --shell=bash
+      - run: |
+          echo -n 'exec find . -maxdepth 2 -name .git -type d -prune -o -type f ' > ci_shellcheck.sh
+          echo -n '\( -name \*.sh -or -name \*.bats -or -name \*.bash \) -print0 ' >> ci_shellcheck.sh
+          echo -n '| xargs -0 -r -n1 shellcheck ' >> ci_shellcheck.sh
+          echo -n '--enable=all --severity=warning --color=never --format gcc' >> ci_shellcheck.sh
+      - uses: docker://pipelinecomponents/shellcheck:latest
         with:
-          format: gcc
-          severity: warning
+          args: /bin/sh ci_shellcheck.sh
 
   yamllint:
     name: Yamllint
