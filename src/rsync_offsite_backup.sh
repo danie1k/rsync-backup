@@ -213,13 +213,12 @@ function collect_options() {
   export LIST_ONLY_FLAG
 }
 
-return 0 # FIXME: Remove
+function get_active_jobs() {
+  screen -wipe 1>/dev/null 2>&1 || true
+  screen -list | grep 'Detached' | grep "${_PREFIX}" | awk '{print $1}'
+}
 
-#
-# Get/show current jobs
-#
-screen -wipe 1>/dev/null 2>&1 || true
-readonly ACTIVE_SCREEN_SESSIONS="$(screen -list | grep 'Detached' | grep "${_PREFIX}" | awk '{print $1}')"
+return 0 # FIXME: Remove
 
 # shellcheck disable=SC2248,SC2250
 if [ $LIST_ONLY_FLAG -eq 1 ]
