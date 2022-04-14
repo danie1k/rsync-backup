@@ -5,10 +5,57 @@ shopt -s failglob
 readonly SELF="${0}"
 readonly PID=$$
 readonly _PREFIX='rsync:'
+readonly _TERMWIDTH=78
 readonly _VERSION='2022.02'
 
 _error() { echo "ERROR: ${*}" >&2; }
 _out() { echo "${*}"; }
+
+_header() {
+  local _pad="$(printf '%0.1s' " "{1..500})"
+  local _seq=$(seq 1 ${_TERMWIDTH})
+
+  _top() {
+    echo -n '┌'
+    printf '─%.0s' ${_seq}
+    echo '┐'
+  }
+  _mid() {
+    echo -n '├'
+    printf '─%.0s' ${_seq}
+    echo '┤'
+  }
+  _btm() {
+    echo -n '└'
+    printf '─%.0s' ${_seq}
+    echo '┘'
+  }
+
+  _top
+
+  # https://unix.stackexchange.com/a/267730
+  printf '│%*.*s%s%*.*s│\n' \
+    0 "$(((_TERMWIDTH - ${#1}) / 2))" "${_pad}" \
+    "${1}" \
+    0 "$(((_TERMWIDTH + 1 - ${#1}) / 2))" "${_pad}"
+
+  shift
+
+  if [[ $# -eq 0 ]]; then
+    _btm
+    return 0
+  else
+    _mid
+  fi
+
+  for line in "${@}"; do
+    printf '│ %s %*.*s│\n' \
+      "${line}" \
+      0 "$(((_TERMWIDTH - 2 - ${#line})))" "${_pad}"
+  done
+
+  _btm
+}
 
 #
 # Defaults
