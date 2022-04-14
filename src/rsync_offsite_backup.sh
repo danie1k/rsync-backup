@@ -7,6 +7,8 @@ readonly PID=$$
 readonly _PREFIX='rsync:'
 readonly _VERSION='2022.02'
 
+_error() { echo "ERROR: ${*}" >&2; }
+_out() { echo "${*}"; }
 
 #
 # Defaults
@@ -151,8 +153,8 @@ function check_prerequisites() {
   for command_name in "${required_commands[@]}"; do
     # shellcheck disable=SC2248
     if ! which ${command_name} 1>/dev/null 2>&1; then
-      echo -n "ERROR: ${command_name} is not available or not in your PATH. " >&2
-      echo "Please install ${command_name} and try again." >&2
+      _error "${command_name} is not available or not in your PATH." \
+             "Please install ${command_name} and try again."
       exit 1
     fi
   done
@@ -160,16 +162,16 @@ function check_prerequisites() {
 
 
 function print_usage() {
-  echo "Usage: ${SELF} [OPTIONS]"
-  echo
-  echo "Options:"
-  echo "  -c FILE     Path to config file for this job"
-  echo "  -d          Dry run"
-  echo "  -l          Show list of the currently running jobs and exit"
-  echo "  -n NAME     Custom name of the job"
-  echo "  -h          Shows this help"
-  echo
-  echo "Version ${_VERSION}"
+  _out "Usage: ${SELF} [OPTIONS]"
+  _out
+  _out "Options:"
+  _out "  -c FILE     Path to config file for this job"
+  _out "  -d          Dry run"
+  _out "  -l          Show list of the currently running jobs and exit"
+  _out "  -n NAME     Custom name of the job"
+  _out "  -h          Shows this help"
+  _out
+  _out "Version ${_VERSION}"
 }
 
 
