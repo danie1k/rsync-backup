@@ -158,24 +158,23 @@ function check_prerequisites() {
   done
 }
 
-return 0  # FIXME: Remove
 
-
-#
-# Process command line args
-#
-usage() {
+function print_usage() {
   echo "Usage: ${SELF} [OPTIONS]"
   echo
   echo "Options:"
-  echo "  -c string   Path to config file for this job"
+  echo "  -c FILE     Path to config file for this job"
   echo "  -d          Dry run"
   echo "  -l          Show list of the currently running jobs and exit"
-  echo "  -n string   Custom name of the job"
+  echo "  -n NAME     Custom name of the job"
   echo "  -h          Shows this help"
   echo
   echo "Version ${_VERSION}"
 }
+
+
+return 0  # FIXME: Remove
+
 
 [ $# -eq 0 ] && usage && exit 1
 
