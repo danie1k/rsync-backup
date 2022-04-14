@@ -13,12 +13,7 @@ _out() { echo "${*}"; }
 #
 # Defaults
 #
-DRY_RUN_FLAG=0
-LIST_ONLY_FLAG=0
-
-CONFIG_FILE=""
-DEFAULT_INFO="progress2"
-JOB_NAME="${_PREFIX}${PID}"
+DEFAULT_INFO='progress2'
 RSYNC_OPTIONS=(
   #--8-bit-output           # leave high-bit chars unescaped in output
   #--acls                   # preserve ACLs (implies --perms)
@@ -174,34 +169,51 @@ function print_usage() {
   _out "Version ${_VERSION}"
 }
 
+function collect_options() {
+  if [[ $# -eq 0 ]]; then
+    print_usage
+    exit 1
+  fi
 
-return 0  # FIXME: Remove
+  # Values
+  CONFIG_FILE=''
+  JOB_NAME="${_PREFIX}${PID}"
+  # Flags
+  DRY_RUN_FLAG=0
+  LIST_ONLY_FLAG=0
 
+  while getopts ':c:dhln:-' opt; do
+    case "${opt}" in
+      '-')
+        _error 'Long options are not supported'
+        exit 2
+        ;;
+      c)
+        CONFIG_FILE="${OPTARG}"
+        ;;
+      d)
+        DRY_RUN_FLAG=1
+        ;;
+      l)
+        LIST_ONLY_FLAG=1
+        ;;
+      n)
+        JOB_NAME="${_PREFIX}${OPTARG}"
+        ;;
+      h | *)
+        print_usage
+        exit 1
+        ;;
+    esac
+  done
 
-[ $# -eq 0 ] && usage && exit 1
+  export CONFIG_FILE
+  export DRY_RUN_FLAG
+  export JOB_NAME
+  export LIST_ONLY_FLAG
+}
 
-while getopts ":c:dhln:" opt
-do
-  case "${opt}" in
-    c)
-      readonly CONFIG_FILE="${OPTARG}"
-      ;;
-    d)
-      readonly DRY_RUN_FLAG=1
-      ;;
-    l)
-      readonly LIST_ONLY_FLAG=1
-      ;;
-    n)
-      readonly JOB_NAME="${_PREFIX}${OPTARG}"
-      ;;
-    h|*)
-      usage
-      exit 1
-      ;;
-  esac
-done
-
+return 0 # FIXME: Remove
 
 #
 # Get/show current jobs
