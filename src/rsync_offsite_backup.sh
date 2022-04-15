@@ -1,12 +1,11 @@
 #!/bin/bash
 set -eu -o pipefail
 shopt -s failglob
+readonly __VERSION__='2022.02'
 
-readonly SELF="${0}"
-readonly PID=$$
-readonly _PREFIX='rsync:'
-readonly _TERMWIDTH=78
-readonly _VERSION='2022.02'
+##
+## HELPERS
+##
 
 _error() { echo "ERROR: ${*}" >&2; }
 _out() { echo "${*}"; }
@@ -57,9 +56,26 @@ _header() {
   _btm
 }
 
-#
-# Defaults
-#
+_get_version() {
+  local needle="${2:-NF}"
+
+  if ! raw_version=$("${1}" --version 2>/dev/null); then
+    echo '-'
+    return 0
+  fi
+
+  echo "${raw_version}" | head -1 | awk "{print \$${needle}}"
+}
+
+##
+## DEFAULTS
+##
+
+readonly SELF="${0}"
+readonly PID=$$
+readonly _PREFIX='rsync:'
+readonly _TERMWIDTH=78
+
 DEFAULT_INFO='progress2'
 RSYNC_OPTIONS=(
   #--8-bit-output           # leave high-bit chars unescaped in output
@@ -213,7 +229,7 @@ function print_usage() {
   _out "  -n NAME     Custom name of the job"
   _out "  -h          Shows this help"
   _out
-  _out "Version ${_VERSION}"
+  _out "Version ${__VERSION__}"
 }
 
 function collect_options() {
