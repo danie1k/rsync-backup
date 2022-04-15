@@ -10,10 +10,10 @@ _common_setup() {
 
    # shellcheck disable=SC2154
   local project_root="$(cd "$(dirname "${BATS_TEST_FILENAME}")/.." >/dev/null 2>&1 && pwd)"
-  PATH="${project_root}/src:${PATH}"
+  PATH="${project_root}/src:${project_root}/test/bin:${PATH}"
 
   # shellcheck disable=SC2034
-  PATH_BACKUP="$PATH"
+  PATH_BACKUP="${PATH}"
 
   source rsync_offsite_backup.sh
 }

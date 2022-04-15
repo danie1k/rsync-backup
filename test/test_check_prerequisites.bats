@@ -9,8 +9,7 @@ teardown() {
   PATH="${PATH_BACKUP:?}"
 }
 
-
-@test "check_prerequisites should not find dasel executable" {
+@test "check_prerequisites should not find awk executable" {
   # GIVEN
   # shellcheck disable=SC2123
   PATH='.'
@@ -18,7 +17,8 @@ teardown() {
   # WHEN
   run check_prerequisites
 
+  PATH="${PATH_BACKUP:?}"
   # THEN
   assert_failure
-  assert_output 'ERROR: dasel is not available or not in your PATH. Please install dasel and try again.'
+  assert_output 'ERROR: awk is not available or not in your PATH. Please install awk and try again.'
 }

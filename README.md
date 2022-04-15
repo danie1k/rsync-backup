@@ -10,8 +10,7 @@ A simple bash script wrapper for the rsync command
 ## Requirements
 
 - `bash` (or any other bash-compatible shell; `sh`, `dash`, etc. are not supported)
-- `dasel` (https://github.com/TomWright/dasel)
-- `jq` (https://github.com/stedolan/jq)
+- [dasel](https://github.com/TomWright/dasel) or [yq](https://github.com/mikefarah/yq)
 - `rsync`
 - `screen`
 - `envsubst` (optional, a part of `gettext` package)

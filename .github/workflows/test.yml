@@ -21,18 +21,26 @@ jobs:
         with:
           submodules: "true"
 
+      - name: Download dasel
+        uses: wei/wget@v1
+        with:
+          args: -O test/bin/dasel https://github.com/TomWright/dasel/releases/download/v1.24.1/dasel_linux_amd64
+      - name: Download yq
+        uses: wei/wget@v1
+        with:
+          args: -O test/bin/yq https://github.com/mikefarah/yq/releases/download/v4.24.5/yq_linux_amd64
+
       - name: Run tests
         uses: docker://kcov/kcov:latest
         with:
-          args: kcov --include-path src/ codecov/ ./test/bats/bin/bats test/
+          args: /bin/sh test/bin/ci_tests.sh
 
       # https://github.com/particleflux/kcov-bats-circleci-codeclimate/blob/master/.circleci/config.yml
       - name: Prepare coverage report
         run: |2
-          _xml="$(ls -1 codecov/bats*/cobertura.xml | head -1)"
           sed -r \
             's#"bats"#"src"#;s#/github/workspace/##;s#<source>(.+)/</source>#<source>/github/workspace/</source>#' \
-            "$_xml" > coverage.xml
+            "$(ls -1 codecov/bats*/cobertura.xml | head -1)" > coverage.xml
       - name: Upload coverage report
         uses: codecov/codecov-action@v2
         # https://github.com/SimonKagstrom/kcov/blob/master/doc/codecov.md

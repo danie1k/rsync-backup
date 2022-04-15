@@ -1,7 +1,8 @@
 #!/bin/bash
-set -eu -o pipefail
-shopt -s failglob
+set -eu +o pipefail
+
 readonly __VERSION__='2022.02'
+readonly __NO_VALUE__='-'
 
 ##
 ## HELPERS
@@ -60,11 +61,50 @@ _get_version() {
   local needle="${2:-NF}"
 
   if ! raw_version=$("${1}" --version 2>/dev/null); then
-    echo '-'
+    echo "${__NO_VALUE__}"
     return 0
   fi
 
   echo "${raw_version}" | head -1 | awk "{print \$${needle}}"
+}
+
+_get_config_list() {
+  local _result='null'
+
+  if [[ "${DASEL_VER:?}" != "-" ]]; then
+    # dasel
+    _result="$(
+      echo "${1}" | dasel --null --plain -p yaml -m \
+        --format '{{ selectMultiple ".[*]" | format "{{ select \".\" }}{{ newline }}" }}' \
+        "${2}" 2>/dev/null
+    )"
+  elif [[ "${YQ_VER:?}" != "${__NO_VALUE__}" ]]; then
+    # yq
+    local _result="$(
+      echo "${1}" | yq --no-colors e "${2}" - 2>/dev/null \
+        | yq --no-colors e $'join("\n")' - 2>/dev/null
+    )"
+  fi
+
+  if [[ "${_result}" == null* ]] || [[ -z "${_result}" ]]; then
+    echo "${__NO_VALUE__}"
+  else
+    echo "${_result}"
+  fi
+}
+
+_get_config_value() {
+  local _result='null'
+
+  if [[ "${DASEL_VER:?}" != "${__NO_VALUE__}" ]]; then
+    # dasel
+    _result="$(echo "${1}" | dasel --null --plain -p yaml -m "${2}")"
+  elif [[ "${YQ_VER:?}" != "${__NO_VALUE__}" ]]; then
+    # yq
+    _result="$(echo "${1}" | yq --no-colors e "${2}" -)"
+  fi
+
+  [[ "${_result}" == null* ]] && echo "${__NO_VALUE__}" || echo "${_result}"
 }
 
 ##
@@ -206,13 +246,13 @@ RSYNC_OPTIONS=(
 )
 
 function check_prerequisites() {
-  local required_commands=(dasel jq rsync screen)
+  local required_commands=(awk grep head rsync screen)
 
   for command_name in "${required_commands[@]}"; do
     # shellcheck disable=SC2248
     if ! which ${command_name} 1>/dev/null 2>&1; then
       _error "${command_name} is not available or not in your PATH." \
-             "Please install ${command_name} and try again."
+        "Please install ${command_name} and try again."
       exit 1
     fi
   done
