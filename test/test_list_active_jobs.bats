@@ -8,7 +8,6 @@ get_active_jobs_stdout=(
 
 setup() {
   load 'test_helper/common-setup'
-  load 'test_helper/mocks/stub'
   _common_setup
 }
 

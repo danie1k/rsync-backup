@@ -372,29 +372,33 @@ function get_config_file() {
   fi
 }
 
+function load_config() {
+  local conf="$(get_config_file)"
+
+  SSH_KEY="$(_get_config_value "${conf}" '.ssh.key')"
+  SSH_HOST="$(_get_config_value "${conf}" '.ssh.host')"
+  SSH_PORT="$(_get_config_value "${conf}" '.ssh.port')"
+  SSH_USER="$(_get_config_value "${conf}" '.ssh.user')"
+
+  PATH_SOURCE="$(_get_config_value "${conf}" '.path.source')"
+  PATH_REMOTE="$(_get_config_value "${conf}" '.path.remote')"
+
+  for var_name in SSH_KEY SSH_HOST SSH_PORT SSH_USER PATH_SOURCE PATH_REMOTE; do
+    if [[ "${!var_name}" == '' ]]; then
+      _error 'Config file syntax is invalid.'
+      exit 1
+    fi
+  done
+
+  export SSH_KEY
+  export SSH_HOST
+  export SSH_PORT
+  export SSH_USER
+  export PATH_SOURCE
+  export PATH_REMOTE
+}
+
 return 0 # FIXME: Remove
-
-#
-# Read config
-#
-_CONF=''
-readonly SSH_KEY="$(echo "${_CONF}" | dasel --null -c '.ssh.key' -p yaml 2>/dev/null)"
-readonly SSH_HOST="$(echo "${_CONF}" | dasel --null -c '.ssh.host' -p yaml 2>/dev/null)"
-readonly SSH_PORT="$(echo "${_CONF}" | dasel --null -c '.ssh.port' -p yaml 2>/dev/null)"
-readonly SSH_USER="$(echo "${_CONF}" | dasel --null -c '.ssh.user' -p yaml 2>/dev/null)"
-
-readonly PATH_SOURCE="$(echo "${_CONF}" | dasel --null -c '.path.source' -p yaml 2>/dev/null)"
-readonly PATH_REMOTE="$(echo "${_CONF}" | dasel --null -c '.path.remote' -p yaml 2>/dev/null)"
-
-for var_name in SSH_KEY SSH_HOST SSH_PORT SSH_USER PATH_SOURCE PATH_REMOTE
-do
-  if [[ "${!var_name}" == '' ]]
-  then
-    echo "ERROR: Config file syntax is invalid." >&2
-    exit 1
-  fi
-done
-
 
 #
 # Parse ssh connection parameters
@@ -408,7 +412,7 @@ RSYNC_OPTIONS+=(
 #
 # Parse info flags
 #
-readonly info_json="$(echo "${_CONF}" | dasel -c -p yaml -r yaml -w json '.rsync.info' 2>/dev/null || echo "[\"${DEFAULT_INFO}\"]")"
+readonly info_json="$(echo "${_CONF:-}" | dasel -c -p yaml -r yaml -w json '.rsync.info' 2>/dev/null || echo "[\"${DEFAULT_INFO}\"]")"
 
 RSYNC_OPTIONS+=(
   --info                      # fine-grained informational verbosity

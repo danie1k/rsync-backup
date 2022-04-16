@@ -8,9 +8,21 @@ setup() {
 }
 
 teardown() {
-  rm -f "${TMPFILE}"
+  set -e
+  rm -f "${TMPFILE}" "${PROJECT_ROOT:?}/test/bin/envsubst"
+
+  set +e
   unset CONFIG_FILE
+  unset DASEL_VER
+  unset YQ_VER
   unset TMPFILE
+
+  unset SSH_KEY
+  unset SSH_HOST
+  unset SSH_PORT
+  unset SSH_USER
+  unset PATH_SOURCE
+  unset PATH_REMOTE
 }
 
 # get_config_file --------------------------------------------------------------
@@ -48,7 +60,12 @@ teardown() {
   export CONFIG_FILE="${TMPFILE}"
 
   # MOCK
-  envsubst() { echo "lorem ipsum config:$(</dev/stdin)"; }
+  {
+    echo '#!/bin/sh'
+    echo 'echo -n "lorem ipsum config:"'
+    echo 'while read line; do echo "$line"; done < "${1:-/dev/stdin}"'
+  } > "${PROJECT_ROOT}/test/bin/envsubst"
+  chmod a+x "${PROJECT_ROOT}/test/bin/envsubst"
 
   # WHEN
   run get_config_file
@@ -56,4 +73,60 @@ teardown() {
   # THEN
   assert_success
   assert_output "lorem ipsum config:${given_config_contents}"
+}
+
+# load_config ------------------------------------------------------------------
+
+@test "load_config should load config file using dasel" {
+  # GIVEN
+  export DASEL_VER='irrelevant'
+  export YQ_VER="${__NO_VALUE__:?}"
+  export CONFIG_FILE="${PROJECT_ROOT:?}/src/example.config.yml"
+
+  assert_equal "${SSH_KEY:-}" ''
+  assert_equal "${SSH_HOST:-}" ''
+  assert_equal "${SSH_PORT:-}" ''
+  assert_equal "${SSH_USER:-}" ''
+  assert_equal "${PATH_SOURCE:-}" ''
+  assert_equal "${PATH_REMOTE:-}" ''
+
+  # WHEN
+  load_config
+
+  # THEN
+  assert_equal $? 0
+  # shellcheck disable=SC2088
+  assert_equal "${SSH_KEY}" '~/.ssh/id_rda'
+  assert_equal "${SSH_HOST}" 'example.com'
+  assert_equal "${SSH_PORT}" '22'
+  assert_equal "${SSH_USER}" 'johndoe'
+  assert_equal "${PATH_SOURCE}" '/tmp/'
+  assert_equal "${PATH_REMOTE}" 'tmp/'
+}
+
+@test "load_config should load config file using yq" {
+  # GIVEN
+  export DASEL_VER="${__NO_VALUE__:?}"
+  export YQ_VER='irrelevant'
+  export CONFIG_FILE="${PROJECT_ROOT:?}/src/example.config.yml"
+
+  assert_equal "${SSH_KEY:-}" ''
+  assert_equal "${SSH_HOST:-}" ''
+  assert_equal "${SSH_PORT:-}" ''
+  assert_equal "${SSH_USER:-}" ''
+  assert_equal "${PATH_SOURCE:-}" ''
+  assert_equal "${PATH_REMOTE:-}" ''
+
+  # WHEN
+  load_config
+
+  # THEN
+  assert_equal $? 0
+  # shellcheck disable=SC2088
+  assert_equal "${SSH_KEY}" '~/.ssh/id_rda'
+  assert_equal "${SSH_HOST}" 'example.com'
+  assert_equal "${SSH_PORT}" '22'
+  assert_equal "${SSH_USER}" 'johndoe'
+  assert_equal "${PATH_SOURCE}" '/tmp/'
+  assert_equal "${PATH_REMOTE}" 'tmp/'
 }
