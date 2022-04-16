@@ -258,9 +258,15 @@ function check_prerequisites() {
   done
 }
 
-
 function print_usage() {
-  _out "Usage: ${SELF} [OPTIONS]"
+  _header "$(basename "${SELF}") v${__VERSION__}" \
+    "Usage: ${SELF} [OPTIONS]" \
+    '' \
+    "dasel:    ${DASEL_VER:?}" \
+    "envsubst: ${ENVSUBST_VER:?}" \
+    "rsync:    ${RSYNC_VER:?} (protocol version ${RSYNC_PROTOCOL_VER:?})" \
+    "yq:       ${YQ_VER:?}"
+
   _out
   _out "Options:"
   _out "  -c FILE     Path to config file for this job"
@@ -269,7 +275,6 @@ function print_usage() {
   _out "  -n NAME     Custom name of the job"
   _out "  -h          Shows this help"
   _out
-  _out "Version ${__VERSION__}"
 }
 
 function collect_options() {
@@ -338,6 +343,20 @@ function list_active_jobs() {
       i=$((i + 1))
     done
   fi
+}
+
+function get_3rd_parties_versions() {
+  DASEL_VER="$(_get_version dasel)"
+  ENVSUBST_VER="$(_get_version envsubst)"
+  RSYNC_PROTOCOL_VER="$(_get_version rsync)"
+  RSYNC_VER="$(_get_version rsync 3)"
+  YQ_VER="$(_get_version yq)"
+
+  export DASEL_VER
+  export ENVSUBST_VER
+  export RSYNC_PROTOCOL_VER
+  export RSYNC_VER
+  export YQ_VER
 }
 
 return 0 # FIXME: Remove

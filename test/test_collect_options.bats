@@ -3,10 +3,26 @@
 setup() {
   load 'test_helper/common-setup'
   _common_setup
+
   unset CONFIG_FILE
   unset DRY_RUN_FLAG
   unset JOB_NAME
   unset LIST_ONLY_FLAG
+
+  # MOCK
+  export DASEL_VER='42'
+  export ENVSUBST_VER='42'
+  export RSYNC_PROTOCOL_VER='42'
+  export RSYNC_VER='42'
+  export YQ_VER='42'
+}
+
+teardown() {
+  unset DASEL_VER
+  unset ENVSUBST_VER
+  unset RSYNC_PROTOCOL_VER
+  unset RSYNC_VER
+  unset YQ_VER
 }
 
 @test "collect_options should print usage when no args given" {
