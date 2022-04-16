@@ -359,24 +359,25 @@ function get_3rd_parties_versions() {
   export YQ_VER
 }
 
+function get_config_file() {
+  if [[ ! -r "${CONFIG_FILE}" ]]; then
+    _error "Given config file path is invalid: '${CONFIG_FILE}'"
+    exit 1
+  fi
+
+  if which envsubst 1>/dev/null 2>&1; then
+    envsubst <"${CONFIG_FILE}"
+  else
+    cat "${CONFIG_FILE}"
+  fi
+}
+
 return 0 # FIXME: Remove
 
 #
 # Read config
 #
-if [[ ! -r "${CONFIG_FILE}" ]]
-then
-  echo "ERROR: Given config file path is invalid: '${CONFIG_FILE}'" >&2
-  exit 1
-fi
-
-if which envsubst 1>/dev/null 2>&1
-then
-  readonly _CONF="$(envsubst < "${CONFIG_FILE}")"
-else
-  readonly _CONF="$(cat "${CONFIG_FILE}")"
-fi
-
+_CONF=''
 readonly SSH_KEY="$(echo "${_CONF}" | dasel --null -c '.ssh.key' -p yaml 2>/dev/null)"
 readonly SSH_HOST="$(echo "${_CONF}" | dasel --null -c '.ssh.host' -p yaml 2>/dev/null)"
 readonly SSH_PORT="$(echo "${_CONF}" | dasel --null -c '.ssh.port' -p yaml 2>/dev/null)"
