@@ -75,9 +75,9 @@ teardown() {
   assert_output "lorem ipsum config:${given_config_contents}"
 }
 
-# load_config ------------------------------------------------------------------
+# load_required_config ---------------------------------------------------------
 
-@test "load_config should load config file using dasel" {
+@test "load_required_config should load config file using dasel" {
   # GIVEN
   export DASEL_VER='irrelevant'
   export YQ_VER="${__NO_VALUE__:?}"
@@ -91,7 +91,7 @@ teardown() {
   assert_equal "${PATH_REMOTE:-}" ''
 
   # WHEN
-  load_config
+  load_required_config
 
   # THEN
   assert_equal $? 0
@@ -104,7 +104,7 @@ teardown() {
   assert_equal "${PATH_REMOTE}" 'tmp/'
 }
 
-@test "load_config should load config file using yq" {
+@test "load_required_config should load config file using yq" {
   # GIVEN
   export DASEL_VER="${__NO_VALUE__:?}"
   export YQ_VER='irrelevant'
@@ -118,7 +118,7 @@ teardown() {
   assert_equal "${PATH_REMOTE:-}" ''
 
   # WHEN
-  load_config
+  load_required_config
 
   # THEN
   assert_equal $? 0

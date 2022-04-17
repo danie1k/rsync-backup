@@ -372,7 +372,7 @@ function get_config_file() {
   fi
 }
 
-function load_config() {
+function load_required_config() {
   local conf="$(get_config_file)"
 
   SSH_KEY="$(_get_config_value "${conf}" '.ssh.key')"
