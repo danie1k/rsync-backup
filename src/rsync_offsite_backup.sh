@@ -116,134 +116,9 @@ readonly PID=$$
 readonly _PREFIX='rsync:'
 readonly _TERMWIDTH=78
 
-DEFAULT_INFO='progress2'
-RSYNC_OPTIONS=(
-  #--8-bit-output           # leave high-bit chars unescaped in output
-  #--acls                   # preserve ACLs (implies --perms)
-  #--address=ADDRESS        # bind address for outgoing socket to daemon
-  #--append                 # append data onto shorter files
-  #--append-verify          # --append w/old data in file checksum
-  #--archive                # archive mode; equals: '--devices --group --links --owner --perms --recursive --specials --times'
-  #--atimes                 # preserve access (use) times
-  #--backup                 # make backups (see --suffix & --backup-dir)
-  #--backup-dir=DIR         # make backups into hierarchy based in DIR
-  #--block-size=SIZE        # force a fixed checksum block-size
-  #--blocking-io            # use blocking I/O for the remote shell
-  #--bwlimit=RATE           # limit socket I/O bandwidth
-  #--checksum               # skip based on checksum, not mod-time & size
-  #--checksum-choice=STR    # choose the checksum algorithm
-  #--checksum-seed=NUM      # set block/file checksum seed (advanced)
-  #--chmod=CHMOD            # affect file and/or directory permissions
-  #--chown=USER:GROUP       # simple username/groupname mapping
-  #--compare-dest=DIR       # also compare destination files relative to DIR
-  --compress                # compress file data during the transfer
-  #--compress-choice=STR    # choose the compression algorithm
-  #--compress-level=NUM     # explicitly set compression level
-  #--contimeout=SECONDS     # set daemon connection timeout in seconds
-  #--copy-as=USER[:GROUP]   # specify user & optional group for the copy
-  #--copy-dest=DIR          # ... and include copies of unchanged files
-  #--copy-dirlinks          # transform symlink to dir into referent dir
-  #--copy-links             # transform symlink into referent file/dir
-  #--copy-unsafe-links      # only "unsafe" symlinks are transformed
-  #--crtimes                # preserve create times (newness)
-  #--cvs-exclude            # auto-ignore files in the same way CVS does
-  #--debug=FLAGS            # fine-grained debug verbosity
-  #--delay-updates          # put all updated files into place at end
-  --delete                  # delete extraneous files from dest dirs
-  #--delete-after           # receiver deletes after transfer, not during
-  #--delete-before          # receiver deletes before xfer, not during
-  #--delete-delay           # find deletions during, delete after
-  #--delete-during          # receiver deletes during the transfer
-  --delete-excluded         # also delete excluded files from dest dirs
-  #--delete-missing-args    # delete missing source args from destination
-  --devices                 # preserve device files (super-user only)
-  #--dirs                   # transfer directories without recursing
-  #--early-input=FILE       # use FILE for daemon's early exec input
-  #--executability          # preserve executability
-  #--existing               # skip creating new files on receiver
-  #--fake-super             # store/recover privileged attrs using xattrs
-  #--files-from=FILE        # read list of source-file names from FILE
-  #--filter=RULE            # add a file-filtering RULE
-  #--force                  # force deletion of dirs even if not empty
-  #--from0                  # all *-from/filter files are delimited by 0s
-  #--fuzzy                  # find similar file for basis if no dest file
-  #--group                  # preserve group
-  #--groupmap=STRING        # custom groupname mapping
-  #--hard-links             # preserve hard links
-  --human-readable          # output numbers in a human-readable format
-  #--iconv=CONVERT_SPEC     # request charset conversion of filenames
-  #--ignore-errors          # delete even if there are I/O errors
-  #--ignore-existing        # skip updating files that exist on receiver
-  #--ignore-missing-args    # ignore missing source args without error
-  #--ignore-times           # don't skip files that match size and time
-  #--include-from=FILE      # read include patterns from FILE
-  #--include=PATTERN        # don't exclude files matching PATTERN
-  #--inplace                # update destination files in-place
-  #--keep-dirlinks          # treat symlinked dir on receiver as dir
-  #--link-dest=DIR          # hardlink to files in DIR when unchanged
-  --links                   # copy symlinks as symlinks
-  #--list-only              # list the files instead of copying them
-  #--log-file-format=FMT    # log updates using the specified FMT
-  #--log-file=FILE          # log what we're doing to the specified FILE
-  #--max-alloc=SIZE         # change a limit relating to memory alloc
-  #--max-delete=NUM         # don't delete more than NUM files
-  #--max-size=SIZE          # don't transfer any file larger than SIZE
-  #--min-size=SIZE          # don't transfer any file smaller than SIZE
-  #--mkpath                 # create the destination's path component
-  #--modify-window=NUM      # set the accuracy for mod-time comparisons
-  #--munge-links            # munge symlinks to make them safe & unusable
-  #--no-OPTION              # turn off an implied OPTION (e.g. --no-D)
-  #--no-implied-dirs        # don't send implied dirs with --relative
-  #--no-motd                # suppress daemon-mode MOTD
-  #--numeric-ids            # don't map uid/gid values by user/group name
-  #--omit-dir-times         # omit directories from --times
-  #--omit-link-times        # omit symlinks from --times
-  #--one-file-system        # don't cross filesystem boundaries
-  #--only-write-batch=FILE  # like --write-batch but w/o updating dest
-  #--open-noatime           # avoid changing the atime on opened files
-  #--out-format=FORMAT      # output updates using the specified FORMAT
-  #--outbuf=N|L|B           # set out buffering to None, Line, or Block
-  #--owner                  # preserve owner (super-user only)
-  #--partial                # keep partially transferred files
-  #--partial-dir=DIR        # put a partially transferred file into DIR
-  #--password-file=FILE     # read daemon-access password from FILE
-  --perms                   # preserve permissions
-  #--port=PORT              # specify double-colon alternate port number
-  #--preallocate            # allocate dest files before writing them
-  #--progress               # show progress during transfer
-  #--protect-args           # no space-splitting; wildcard chars only
-  #--protocol=NUM           # force an older protocol version to be used
-  #--prune-empty-dirs       # prune empty directory chains from file-list
-  #--quiet                  # suppress non-error messages
-  #--read-batch=FILE        # read a batched update from FILE
-  --recursive               # recurse into directories
-  #--relative               # use relative path names
-  #--remote-option=OPT      # send OPTION to the remote side only
-  #--remove-source-files    # sender removes synchronized files (non-dir)
-  #--rsync-path=PROGRAM     # specify the rsync to run on remote machine
-  #--safe-links             # ignore symlinks that point outside the tree
-  #--size-only              # skip files that match in size
-  #--skip-compress=LIST     # skip compressing files with suffix in LIST
-  #--sockopts=OPTIONS       # specify custom TCP options
-  #--sparse                 # turn sequences of nulls into sparse blocks
-  --specials                # preserve special files
-  --stats                   # give some file-transfer stats
-  #--stderr=e|a|c           # change stderr output mode (default: errors)
-  #--stop-after=MINS        # Stop rsync after MINS minutes have elapsed
-  #--stop-at=y-m-dTh:m      # Stop rsync at the specified point in time
-  #--suffix=SUFFIX          # backup suffix (default ~ w/o --backup-dir)
-  #--super                  # receiver attempts super-user activities
-  #--temp-dir=DIR           # create temporary files in directory DIR
-  #--timeout=SECONDS        # set I/O timeout in seconds
-  --times                   # preserve modification times
-  #--update                 # skip files that are newer on the receiver
-  #--usermap=STRING         # custom username mapping
-  #--verbose                # increase verbosity
-  #--whole-file             # copy files whole (w/o delta-xfer algorithm)
-  #--write-batch=FILE       # write a batched update to FILE
-  #--write-devices          # write to devices as files (implies --inplace)
-  #--xattrs                 # preserve extended attributes
-)
+##
+## FUNCTIONS
+##
 
 function check_prerequisites() {
   local required_commands=(awk grep head rsync screen)
@@ -406,30 +281,168 @@ function load_optional_config() {
   export RSYNC_INFO
 }
 
-return 0 # FIXME: Remove
+function collect_rsync_options() {
+  local default_info='progress2'
 
-#
-# Parse ssh connection parameters
-#
-RSYNC_OPTIONS+=(
-  --rsh
-  "ssh -p ${SSH_PORT} -i $(printf '%q' "${SSH_KEY}")"
-)
-
-
-#
-# Dry run parameters
-#
-# shellcheck disable=SC2248,SC2250
-if [ $DRY_RUN_FLAG -eq 1 ]
-then
-  RSYNC_OPTIONS+=(
-    --itemize-changes         # output a change-summary for all updates
-    --dry-run                 # perform a trial run with no changes made
+  RSYNC_OPTIONS=(
+    #--8-bit-output           # leave high-bit chars unescaped in output
+    #--acls                   # preserve ACLs (implies --perms)
+    #--address=ADDRESS        # bind address for outgoing socket to daemon
+    #--append                 # append data onto shorter files
+    #--append-verify          # --append w/old data in file checksum
+    #--archive                # archive mode; equals: '--devices --group --links --owner --perms --recursive --specials --times'
+    #--atimes                 # preserve access (use) times
+    #--backup                 # make backups (see --suffix & --backup-dir)
+    #--backup-dir=DIR         # make backups into hierarchy based in DIR
+    #--block-size=SIZE        # force a fixed checksum block-size
+    #--blocking-io            # use blocking I/O for the remote shell
+    #--bwlimit=RATE           # limit socket I/O bandwidth
+    #--checksum               # skip based on checksum, not mod-time & size
+    #--checksum-choice=STR    # choose the checksum algorithm
+    #--checksum-seed=NUM      # set block/file checksum seed (advanced)
+    #--chmod=CHMOD            # affect file and/or directory permissions
+    #--chown=USER:GROUP       # simple username/groupname mapping
+    #--compare-dest=DIR       # also compare destination files relative to DIR
+    --compress #                compress file data during the transfer
+    #--compress-choice=STR    # choose the compression algorithm
+    #--compress-level=NUM     # explicitly set compression level
+    #--contimeout=SECONDS     # set daemon connection timeout in seconds
+    #--copy-as=USER[:GROUP]   # specify user & optional group for the copy
+    #--copy-dest=DIR          # ... and include copies of unchanged files
+    #--copy-dirlinks          # transform symlink to dir into referent dir
+    #--copy-links             # transform symlink into referent file/dir
+    #--copy-unsafe-links      # only "unsafe" symlinks are transformed
+    #--crtimes                # preserve create times (newness)
+    #--cvs-exclude            # auto-ignore files in the same way CVS does
+    #--debug=FLAGS            # fine-grained debug verbosity
+    #--delay-updates          # put all updated files into place at end
+    --delete #                  delete extraneous files from dest dirs
+    #--delete-after           # receiver deletes after transfer, not during
+    #--delete-before          # receiver deletes before xfer, not during
+    #--delete-delay           # find deletions during, delete after
+    #--delete-during          # receiver deletes during the transfer
+    --delete-excluded #         also delete excluded files from dest dirs
+    #--delete-missing-args    # delete missing source args from destination
+    --devices #                 preserve device files (super-user only)
+    #--dirs                   # transfer directories without recursing
+    #--early-input=FILE       # use FILE for daemon's early exec input
+    #--executability          # preserve executability
+    #--existing               # skip creating new files on receiver
+    #--fake-super             # store/recover privileged attrs using xattrs
+    #--files-from=FILE        # read list of source-file names from FILE
+    #--filter=RULE            # add a file-filtering RULE
+    #--force                  # force deletion of dirs even if not empty
+    #--from0                  # all *-from/filter files are delimited by 0s
+    #--fuzzy                  # find similar file for basis if no dest file
+    #--group                  # preserve group
+    #--groupmap=STRING        # custom groupname mapping
+    #--hard-links             # preserve hard links
+    --human-readable #          output numbers in a human-readable format
+    #--iconv=CONVERT_SPEC     # request charset conversion of filenames
+    #--ignore-errors          # delete even if there are I/O errors
+    #--ignore-existing        # skip updating files that exist on receiver
+    #--ignore-missing-args    # ignore missing source args without error
+    #--ignore-times           # don't skip files that match size and time
+    #--include-from=FILE      # read include patterns from FILE
+    #--include=PATTERN        # don't exclude files matching PATTERN
+    #--inplace                # update destination files in-place
+    #--keep-dirlinks          # treat symlinked dir on receiver as dir
+    #--link-dest=DIR          # hardlink to files in DIR when unchanged
+    --links #                   copy symlinks as symlinks
+    #--list-only              # list the files instead of copying them
+    #--log-file-format=FMT    # log updates using the specified FMT
+    #--log-file=FILE          # log what we're doing to the specified FILE
+    #--max-alloc=SIZE         # change a limit relating to memory alloc
+    #--max-delete=NUM         # don't delete more than NUM files
+    #--max-size=SIZE          # don't transfer any file larger than SIZE
+    #--min-size=SIZE          # don't transfer any file smaller than SIZE
+    #--mkpath                 # create the destination's path component
+    #--modify-window=NUM      # set the accuracy for mod-time comparisons
+    #--munge-links            # munge symlinks to make them safe & unusable
+    #--no-OPTION              # turn off an implied OPTION (e.g. --no-D)
+    #--no-implied-dirs        # don't send implied dirs with --relative
+    #--no-motd                # suppress daemon-mode MOTD
+    #--numeric-ids            # don't map uid/gid values by user/group name
+    #--omit-dir-times         # omit directories from --times
+    #--omit-link-times        # omit symlinks from --times
+    #--one-file-system        # don't cross filesystem boundaries
+    #--only-write-batch=FILE  # like --write-batch but w/o updating dest
+    #--open-noatime           # avoid changing the atime on opened files
+    #--out-format=FORMAT      # output updates using the specified FORMAT
+    #--outbuf=N|L|B           # set out buffering to None, Line, or Block
+    #--owner                  # preserve owner (super-user only)
+    #--partial                # keep partially transferred files
+    #--partial-dir=DIR        # put a partially transferred file into DIR
+    #--password-file=FILE     # read daemon-access password from FILE
+    --perms #                   preserve permissions
+    #--port=PORT              # specify double-colon alternate port number
+    #--preallocate            # allocate dest files before writing them
+    #--progress               # show progress during transfer
+    #--protect-args           # no space-splitting; wildcard chars only
+    #--protocol=NUM           # force an older protocol version to be used
+    #--prune-empty-dirs       # prune empty directory chains from file-list
+    #--quiet                  # suppress non-error messages
+    #--read-batch=FILE        # read a batched update from FILE
+    --recursive #               recurse into directories
+    #--relative               # use relative path names
+    #--remote-option=OPT      # send OPTION to the remote side only
+    #--remove-source-files    # sender removes synchronized files (non-dir)
+    #--rsync-path=PROGRAM     # specify the rsync to run on remote machine
+    #--safe-links             # ignore symlinks that point outside the tree
+    #--size-only              # skip files that match in size
+    #--skip-compress=LIST     # skip compressing files with suffix in LIST
+    #--sockopts=OPTIONS       # specify custom TCP options
+    #--sparse                 # turn sequences of nulls into sparse blocks
+    --specials #                preserve special files
+    --stats    #                give some file-transfer stats
+    #--stderr=e|a|c           # change stderr output mode (default: errors)
+    #--stop-after=MINS        # Stop rsync after MINS minutes have elapsed
+    #--stop-at=y-m-dTh:m      # Stop rsync at the specified point in time
+    #--suffix=SUFFIX          # backup suffix (default ~ w/o --backup-dir)
+    #--super                  # receiver attempts super-user activities
+    #--temp-dir=DIR           # create temporary files in directory DIR
+    #--timeout=SECONDS        # set I/O timeout in seconds
+    --times #                   preserve modification times
+    #--update                 # skip files that are newer on the receiver
+    #--usermap=STRING         # custom username mapping
+    #--verbose                # increase verbosity
+    #--whole-file             # copy files whole (w/o delta-xfer algorithm)
+    #--write-batch=FILE       # write a batched update to FILE
+    #--write-devices          # write to devices as files (implies --inplace)
+    #--xattrs                 # preserve extended attributes
   )
-else
-  RSYNC_OPTIONS+=()
-fi
+
+  # SSH connection parameters
+  RSYNC_OPTIONS+=(
+    --rsh
+    "ssh -p ${SSH_PORT} -i $(printf '%q' "${SSH_KEY}")"
+  )
+
+  # Info flags
+  if [[ "${RSYNC_INFO}" == "${__NO_VALUE__}" ]]; then
+    RSYNC_OPTIONS+=(
+      --info
+      "${default_info}"
+    )
+  else
+    RSYNC_OPTIONS+=(
+      --info
+      "${RSYNC_INFO}"
+    )
+  fi
+
+  # Dry run
+  if [[ ${DRY_RUN_FLAG} -eq 1 ]]; then
+    RSYNC_OPTIONS+=(
+      --itemize-changes # output a change-summary for all updates
+      --dry-run         # perform a trial run with no changes made
+    )
+  fi
+
+  export RSYNC_OPTIONS
+}
+
+return 0 # FIXME: Remove
 
 
 #
