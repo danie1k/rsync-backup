@@ -398,6 +398,14 @@ function load_required_config() {
   export PATH_REMOTE
 }
 
+function load_optional_config() {
+  local conf="$(get_config_file)"
+
+  RSYNC_INFO="$(_get_config_list "${conf}" '.rsync.info')"
+
+  export RSYNC_INFO
+}
+
 return 0 # FIXME: Remove
 
 #
@@ -406,17 +414,6 @@ return 0 # FIXME: Remove
 RSYNC_OPTIONS+=(
   --rsh
   "ssh -p ${SSH_PORT} -i $(printf '%q' "${SSH_KEY}")"
-)
-
-
-#
-# Parse info flags
-#
-readonly info_json="$(echo "${_CONF:-}" | dasel -c -p yaml -r yaml -w json '.rsync.info' 2>/dev/null || echo "[\"${DEFAULT_INFO}\"]")"
-
-RSYNC_OPTIONS+=(
-  --info                      # fine-grained informational verbosity
-  "$(echo "${info_json}" | jq -r '. | join(",")' 2>/dev/null || echo "${DEFAULT_INFO}")"
 )
 
 
