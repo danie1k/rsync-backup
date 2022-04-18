@@ -442,8 +442,18 @@ function collect_rsync_options() {
   export RSYNC_OPTIONS
 }
 
-return 0 # FIXME: Remove
+function print_nice_header() {
+  local _dry_run="$([[ ${DRY_RUN_FLAG} -eq 1 ]] && echo 'yes' || echo 'no')"
+  local _remote_target="${SSH_USER}@${SSH_HOST}:${PATH_REMOTE}"
 
+  _header "STARTING RSYNC SESSION" \
+    "Job name:      ${JOB_NAME}" \
+    "Dry run:       ${_dry_run}" \
+    "Local source:  ${PATH_SOURCE}" \
+    "Remote target: ${_remote_target}"
+}
+
+return 0 # FIXME: Remove
 
 #
 # Finally, tell rsync about paths to transfer
@@ -452,24 +462,6 @@ RSYNC_OPTIONS+=(
   "$(printf '%q' "${PATH_SOURCE}")"
   "${SSH_USER}@${SSH_HOST}:$(printf '%q' "${PATH_REMOTE}")"
 )
-
-
-#
-# Print nice header
-#
-_printf_line='                                                            '
-# shellcheck disable=SC2250
-_dry_run="$([[ $DRY_RUN_FLAG -eq 1 ]] && echo 'yes' || echo 'no')"
-_remote_target="${SSH_USER}@${SSH_HOST}:${PATH_REMOTE}"
-echo "┌────────────────────────────────────────────────────────────────────────────┐"
-echo "│                           STARTING RSYNC SESSION                           │"
-echo "├────────────────────────────────────────────────────────────────────────────┤"
-printf "│ Job name:      %s%s│\n" "${JOB_NAME}" "${_printf_line:${#JOB_NAME}}"
-printf "│ Dry run:       %s%s│\n" "${_dry_run}" "${_printf_line:${#_dry_run}}"
-printf "│ Local source:  %s%s│\n" "${PATH_SOURCE}" "${_printf_line:${#PATH_SOURCE}}"
-printf "│ Remote target: %s%s│\n" "${_remote_target}" "${_printf_line:${#_remote_target}}"
-echo "└────────────────────────────────────────────────────────────────────────────┘"
-
 
 #
 # Dry run message
