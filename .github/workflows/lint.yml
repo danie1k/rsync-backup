@@ -17,12 +17,9 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@v2
-      - uses: ludeeus/action-shellcheck@master
-        env:
-          SHELLCHECK_OPTS: --enable=all --shell=bash
+      - uses: docker://pipelinecomponents/shellcheck:latest
         with:
-          format: gcc
-          severity: warning
+          args: /bin/sh test/bin/ci_shellcheck.sh
 
   yamllint:
     name: Yamllint

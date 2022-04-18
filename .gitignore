@@ -96,4 +96,7 @@ modules.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/jetbrains+all
 
-.git
+codecov/
+test/bin/*
+!test/bin/ci_*.sh
+!test/bin/.gitkeep
